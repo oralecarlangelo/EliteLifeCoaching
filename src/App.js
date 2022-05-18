@@ -1,23 +1,81 @@
-import logo from './logo.svg';
-import './App.css';
+import { ErrorMessage, Field, Form, Formik } from "formik";
+import * as Yup from "yup";
+import Body from "./components/Body";
+import Footer from "./components/Footer";
+import Navbar from "./components/Navbar";
 
 function App() {
+  const validationSchema = Yup.object().shape({
+    firstName: Yup.string().required(),
+    address: Yup.object().shape({
+      address: Yup.string().required(),
+      city: Yup.string().when("address", {
+        is: (value) => value,
+        then: (city) => city.required(),
+      }),
+    }),
+    age: Yup.number().required().min(1)
+  });
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <Body>
+        <Formik
+          validationSchema={validationSchema}
+          initialValues={{
+            firstName: "",
+            lastName: "",
+            email: "",
+            address: {
+              address: "",
+              city: "",
+            },
+            age: 0
+          }}
+          onSubmit={async (values) => {
+            await new Promise((r) => setTimeout(r, 500));
+            alert(JSON.stringify(values, null, 2));
+          }}
         >
-          Learn React
-        </a>
-      </header>
+          <Form className="flex flex-col">
+            <label htmlFor="firstName">First Name</label>
+            <Field id="firstName" name="firstName" placeholder="Jane" />
+            <ErrorMessage name="firstName">{(message) => message}</ErrorMessage>
+
+            <label htmlFor="address">Address</label>
+            <Field id="address" name="address.address" placeholder="Jane" />
+            <ErrorMessage name="address.address">
+              {(message) => message}
+            </ErrorMessage>
+
+            <label htmlFor="city">City</label>
+            <Field id="city" name="address.city" placeholder="Jane" />
+            <ErrorMessage name="address.city">
+              {(message) => message}
+            </ErrorMessage>
+
+            <label htmlFor="age">Age</label>
+            <Field id="age" name="age" placeholder="Age" type="number" />
+            <ErrorMessage name="age">
+              {(message) => message}
+            </ErrorMessage>
+
+
+            <label htmlFor="lastName">Last Name</label>
+            <Field id="lastName" name="lastName" placeholder="Doe" />
+
+            <label htmlFor="email">Email</label>
+            <Field
+              id="email"
+              name="email"
+              placeholder="jane@acme.com"
+              type="email"
+            />
+            <button type="submit">Submit</button>
+          </Form>
+        </Formik>
+      </Body>
+      <Footer />
     </div>
   );
 }
