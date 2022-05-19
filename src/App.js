@@ -14,10 +14,17 @@ function App() {
         then: (city) => city.required(),
       }),
     }),
-    age: Yup.number().required().min(1)
+    bodySite: Yup.object().shape({
+      system: Yup.string(),
+      code: Yup.string().when("system", {
+        is: (value) => value,
+        then: (code) => code.required("Body Site Code is required."),
+      }),
+    }),
+    age: Yup.number().required().min(1),
   });
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex flex-col min-h-screen">
       <Navbar />
       <Body>
         <Formik
@@ -30,7 +37,11 @@ function App() {
               address: "",
               city: "",
             },
-            age: 0
+            bodySite: {
+              system: "",
+              code: "",
+            },
+            age: 0,
           }}
           onSubmit={async (values) => {
             await new Promise((r) => setTimeout(r, 500));
@@ -54,12 +65,21 @@ function App() {
               {(message) => message}
             </ErrorMessage>
 
-            <label htmlFor="age">Age</label>
-            <Field id="age" name="age" placeholder="Age" type="number" />
-            <ErrorMessage name="age">
+            <label htmlFor="system">Body Site System</label>
+            <Field id="system" name="bodySite.system" placeholder="test" />
+            <ErrorMessage name="bodySite.system">
               {(message) => message}
             </ErrorMessage>
 
+            <label htmlFor="code">Body Site Code</label>
+            <Field id="code" name="bodySite.code" placeholder="test" />
+            <ErrorMessage name="bodySite.code">
+              {(message) => message}
+            </ErrorMessage>
+
+            <label htmlFor="age">Age</label>
+            <Field id="age" name="age" placeholder="Age" type="number" />
+            <ErrorMessage name="age">{(message) => message}</ErrorMessage>
 
             <label htmlFor="lastName">Last Name</label>
             <Field id="lastName" name="lastName" placeholder="Doe" />
